@@ -1,19 +1,23 @@
 class Solution {
 public:
     int subarraysWithKDistinct(vector<int>& nums, int k) {
-    int cnt[20001] = {}, res = 0, sz = nums.size();
-    for (int l = 0, m = 0, r = 0; r < sz; ++r) {
-        if (++cnt[nums[r]] == 1)
-            if (--k < 0) {
-                cnt[nums[m++]] = 0;
-                l = m;
-            }
-        if (k <= 0) {
-            while (cnt[nums[m]] > 1)
-                --cnt[nums[m++]];
-            res += m - l + 1;   
-        }
+        int sub_with_max_element_k = subarray_with_atmost_k(nums,k);
+        int reduced_sub_with_max_k = subarray_with_atmost_k(nums,k-1);
+        return (sub_with_max_element_k - reduced_sub_with_max_k);
     }
-    return res;
-} 
+    int subarray_with_atmost_k(vector<int>& nums,int k){
+        unordered_map<int,int> map;
+        int left = 0 , right = 0,ans = 0;
+        while(right<nums.size()){
+            map[nums[right]]++;
+            while(map.size()>k){
+                map[nums[left]]--;
+                if(map[nums[left]]==0)map.erase(nums[left]);
+                left++;
+            }
+            ans += right-left+1; // basically the size of subarray;
+            right++;
+        }
+        return ans;
+    }
 };
